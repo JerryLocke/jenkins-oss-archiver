@@ -1,0 +1,2 @@
+_extends: .github
+tag-template: oss-archiver-$NEXT_MINOR_VERSION
