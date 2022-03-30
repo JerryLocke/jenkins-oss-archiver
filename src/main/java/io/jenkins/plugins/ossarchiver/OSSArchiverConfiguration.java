@@ -24,6 +24,8 @@ import java.util.List;
 
 @Extension
 public class OSSArchiverConfiguration extends GlobalConfiguration {
+    private static final String DEFAULT_UPLOAD_FOLDER = "build/${JOB_NAME}/${BUILD_ID}/${BUILD_NUMBER}";
+
     public static OSSArchiverConfiguration get() {
         return ExtensionList.lookupSingleton(OSSArchiverConfiguration.class);
     }
@@ -61,6 +63,13 @@ public class OSSArchiverConfiguration extends GlobalConfiguration {
         return uploadFolder;
     }
 
+    public String getUploadFolderOrDefault() {
+        if (StringUtils.isEmpty(uploadFolder)) {
+            return DEFAULT_UPLOAD_FOLDER;
+        }
+        return uploadFolder;
+    }
+
     @DataBoundSetter
     public void setUploadFolder(String uploadFolder) {
         this.uploadFolder = uploadFolder;
@@ -79,14 +88,14 @@ public class OSSArchiverConfiguration extends GlobalConfiguration {
 
     public FormValidation doCheckEndPoint(@QueryParameter String value) {
         if (StringUtils.isEmpty(value)) {
-            return FormValidation.warning(Messages.MissingEndPoint());
+            return FormValidation.warning(Messages.Configuration_MissingEndPoint());
         }
         return FormValidation.ok();
     }
 
     public FormValidation doCheckBucket(@QueryParameter String value) {
         if (StringUtils.isEmpty(value)) {
-            return FormValidation.warning(Messages.MissingBucket());
+            return FormValidation.warning(Messages.Configuration_MissingBucket());
         }
         return FormValidation.ok();
     }
@@ -125,16 +134,16 @@ public class OSSArchiverConfiguration extends GlobalConfiguration {
                 }
             }
             if (targetCredentials == null) {
-                throw new IllegalArgumentException(Messages.CredentialsNotFound(credentialsId));
+                throw new IllegalArgumentException(Messages.Configuration_CredentialsNotFound(credentialsId));
             }
             OSSClient ossClient = new OSSClient(endPoint,
                     new DefaultCredentialProvider(targetCredentials.getUsername(), targetCredentials.getPassword().getPlainText()),
                     new ClientConfiguration()
             );
             ossClient.listObjects(bucket);
-            return FormValidation.ok(Messages.CredentialsValidateSuccessful());
+            return FormValidation.ok(Messages.Configuration_CredentialsValidateSuccessful());
         } catch (Exception e) {
-            return FormValidation.error(e, Messages.CredentialsValidateError());
+            return FormValidation.error(e, Messages.Configuration_CredentialsValidateError());
         }
     }
 }

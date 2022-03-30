@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout">
+    <l:layout title="${%Title}">
+        <j:if test="${it.run!=null}">
+            <st:include page="sidepanel" it="${it.run}" optional="true" />
+        </j:if>
+        <l:main-panel>
+            <h1>${%Title}</h1>
+            <j:choose>
+                <j:when test="${!it.result.isEmpty()}">
+                    <strong>${%FoldersUploadedCount(it.result.size())}</strong>
+                    <ul>
+                        <j:forEach var="entry" items="${it.result.entrySet()}">
+                            <j:set var="folder" value="${entry.key}" />
+                            <j:set var="items" value="${entry.value}" />
+                            <j:choose>
+                                <j:when test="${!items.isEmpty()}">
+                                    <li>
+                                        <strong>${%FolderName(folder)}</strong>
+                                        <br/>
+                                        ${%FilesUploadedCount(items.size())}
+                                        <ul>
+                                            <j:forEach var="item" items="${items}">
+                                                <li>
+                                                    <a href="${item.right}" target="_blank">${item.left}</a>
+                                                </li>
+                                            </j:forEach>
+                                        </ul>
+                                    </li>
+                                </j:when>
+                                <j:otherwise>
+                                    <strong>/${folder}</strong> ${%NoFilesUploaded}
+                                </j:otherwise>
+                            </j:choose>
+                        </j:forEach>
+                    </ul>
+                </j:when>
+                <j:otherwise>
+                    <strong>${%NoFoldersUploaded}</strong>
+                </j:otherwise>
+            </j:choose>
+        </l:main-panel>
+    </l:layout>
+</j:jelly>
